@@ -1,0 +1,4 @@
+trade_id,entry_time,entry_price,stop_loss,target1,target2,exit_time,exit_price,exit_reason,r_multiple,setup_score_at_entry,regime_at_entry,holding_bars
+1,2026-06-05 09:22,103.6,101.98,106.03,107.65,2026-06-05 09:33,106.03,TARGET1_HIT,1.5,9.01813,EXPANSION,11
+2,2026-06-05 09:00,107.3,106.1,109.1,110.3,2026-06-05 09:02,106.1,STOP_HIT,-1,8.877,EXPANSION,2
+3,2026-06-05 09:03,107.35,106.15,109.15,110.35,2026-06-05 09:12,107.59,INVALID_REGIME_SHOCK,0.2,7.91867,EXPANSION,9

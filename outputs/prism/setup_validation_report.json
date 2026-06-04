@@ -1,0 +1,12 @@
+{
+  "valid": true,
+  "setup_name": "Breakout Retest Acceptance",
+  "required_fields_present": true,
+  "weight_total_equals_100": true,
+  "valid_setup_type": true,
+  "valid_entry_type": true,
+  "atr_multiplier_present": true,
+  "ttl_present": true,
+  "target_R_values_valid": true,
+  "notes": ["C++ implementation integrated into realtime-financial-pipeline as prism_backtest mode"]
+}

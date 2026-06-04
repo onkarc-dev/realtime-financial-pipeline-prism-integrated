@@ -1,0 +1,91 @@
+cmake_minimum_required(VERSION 3.20)
+project(RealtimeFinancialPipelineProduction LANGUAGES CXX)
+
+set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(CMAKE_CXX_EXTENSIONS OFF)
+
+if(MSVC)
+    add_compile_options(/O2 /Oi /Ot /EHsc)
+else()
+    add_compile_options(-O3 -march=native -DNDEBUG)
+endif()
+
+# ================================================================
+# Mode 1: engine-only benchmark. No Kafka, no Protobuf, no WebSocket.
+# ================================================================
+add_executable(benchmark_engine
+    cpp_engine/benchmarks/benchmark_engine.cpp
+)
+target_include_directories(benchmark_engine PRIVATE cpp_engine/src)
+
+# ================================================================
+# Mode 2: live Binance engine. Requires libwebsockets.
+# ================================================================
+# vcpkg exposes libwebsockets as unofficial-libwebsockets on Windows.
+# Keep several fallbacks so the same CMakeLists also works on Linux/macOS packages.
+find_package(unofficial-libwebsockets CONFIG QUIET)
+find_package(libwebsockets CONFIG QUIET)
+find_package(Libwebsockets QUIET)
+
+set(LWS_TARGET "")
+if(TARGET unofficial::libwebsockets::libwebsockets)
+    set(LWS_TARGET unofficial::libwebsockets::libwebsockets)
+elseif(TARGET websockets)
+    set(LWS_TARGET websockets)
+elseif(TARGET libwebsockets::websockets)
+    set(LWS_TARGET libwebsockets::websockets)
+elseif(TARGET Libwebsockets::Libwebsockets)
+    set(LWS_TARGET Libwebsockets::Libwebsockets)
+endif()
+
+if(LWS_TARGET)
+    add_executable(live_binance_engine
+        cpp_engine/src/live_binance_engine.cpp
+        cpp_engine/src/connectors/BinanceClient.cpp
+    )
+    target_include_directories(live_binance_engine PRIVATE cpp_engine/src cpp_engine/src/connectors)
+    target_link_libraries(live_binance_engine PRIVATE ${LWS_TARGET})
+else()
+    message(WARNING "libwebsockets not found. live_binance_engine will not be built. Install it with vcpkg: vcpkg install libwebsockets:x64-windows")
+endif()
+
+# ================================================================
+# Mode 3: Kafka demo. Requires protobuf + librdkafka.
+# ================================================================
+find_package(protobuf CONFIG QUIET)
+find_package(RdKafka CONFIG QUIET)
+
+set(RDKAFKA_TARGET "")
+if(TARGET RdKafka::rdkafka++)
+    set(RDKAFKA_TARGET RdKafka::rdkafka++)
+elseif(TARGET RdKafka::rdkafka)
+    set(RDKAFKA_TARGET RdKafka::rdkafka)
+elseif(TARGET rdkafka++)
+    set(RDKAFKA_TARGET rdkafka++)
+endif()
+
+if(protobuf_FOUND AND RDKAFKA_TARGET)
+    add_library(proto_lib)
+    protobuf_generate(
+        TARGET proto_lib
+        LANGUAGE cpp
+        PROTOS ${CMAKE_CURRENT_SOURCE_DIR}/proto/market_data.proto
+    )
+    target_include_directories(proto_lib PUBLIC
+        $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}>
+        $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}/proto>
+    )
+    target_link_libraries(proto_lib PUBLIC protobuf::libprotobuf)
+
+    add_executable(kafka_producer cpp_engine/src/producer.cpp)
+    add_executable(kafka_consumer cpp_engine/src/consumer.cpp)
+
+    foreach(target kafka_producer kafka_consumer)
+        target_include_directories(${target} PRIVATE ${CMAKE_CURRENT_BINARY_DIR})
+        target_link_libraries(${target} PRIVATE proto_lib ${RDKAFKA_TARGET})
+        add_dependencies(${target} proto_lib)
+    endforeach()
+else()
+    message(WARNING "protobuf and/or librdkafka not found. Kafka demo targets will not be built. Install with vcpkg: vcpkg install protobuf librdkafka:x64-windows")
+endif()

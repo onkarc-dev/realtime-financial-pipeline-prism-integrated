@@ -1,0 +1,19 @@
+[
+  {"timestamp":"2026-06-05 09:22","event":"BREAKOUT","breakout_level":102.080000},
+  {"timestamp":"2026-06-05 09:22","event":"TRADE_ACCEPTED","reason_code":"ACCEPTED","trade_id":1},
+  {"timestamp":"2026-06-05 09:33","event":"TRADE_EXIT","reason_code":"TARGET1_HIT","trade_id":1},
+  {"timestamp":"2026-06-05 09:33","event":"BREAKOUT","breakout_level":105.950000},
+  {"timestamp":"2026-06-05 09:33","event":"TRADE_REJECTED","reason_code":"CLOSE_POSITION_LT_0_60|VOLUME_RATIO_LT_1_20"},
+  {"timestamp":"2026-06-05 09:34","event":"BREAKOUT","breakout_level":106.400000},
+  {"timestamp":"2026-06-05 09:34","event":"TRADE_REJECTED","reason_code":"CLOSE_POSITION_LT_0_60|VOLUME_RATIO_LT_1_20"},
+  {"timestamp":"2026-06-05 09:35","event":"TRADE_REJECTED","reason_code":"CLOSE_POSITION_LT_0_60|VOLUME_RATIO_LT_1_20"},
+  {"timestamp":"2026-06-05 09:36","event":"TRADE_REJECTED","reason_code":"CLOSE_BELOW_RETEST_MIDPOINT|CLOSE_POSITION_LT_0_60|VOLUME_RATIO_LT_1_20"},
+  {"timestamp":"2026-06-05 09:37","event":"TRADE_REJECTED","reason_code":"CLOSE_BELOW_RETEST_MIDPOINT|CLOSE_POSITION_LT_0_60|VOLUME_RATIO_LT_1_20"},
+  {"timestamp":"2026-06-05 09:40","event":"ENTRY_EXPIRED","reason_code":"TTL_EXPIRED"},
+  {"timestamp":"2026-06-05 09:00","event":"BREAKOUT","breakout_level":106.800000},
+  {"timestamp":"2026-06-05 09:00","event":"TRADE_ACCEPTED","reason_code":"ACCEPTED","trade_id":2},
+  {"timestamp":"2026-06-05 09:02","event":"TRADE_EXIT","reason_code":"STOP_HIT","trade_id":2},
+  {"timestamp":"2026-06-05 09:02","event":"TRADE_REJECTED","reason_code":"CLOSE_BELOW_RETEST_MIDPOINT|CLOSE_POSITION_LT_0_60"},
+  {"timestamp":"2026-06-05 09:03","event":"TRADE_ACCEPTED","reason_code":"ACCEPTED","trade_id":3},
+  {"timestamp":"2026-06-05 09:12","event":"TRADE_EXIT","reason_code":"INVALID_REGIME_SHOCK","trade_id":3}
+]

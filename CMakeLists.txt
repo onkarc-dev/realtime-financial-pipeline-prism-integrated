@@ -14,16 +14,22 @@ endif()
 add_executable(benchmark_engine
     cpp_engine/benchmarks/benchmark_engine.cpp
 )
-target_include_directories(benchmark_engine PRIVATE cpp_engine/src)
 
-# Live Binance Engine
+target_include_directories(benchmark_engine PRIVATE
+    cpp_engine/src
+)
+
 set(VCPKG_ROOT_DIR "C:/vcpkg")
 set(LWS_INCLUDE_DIR "${VCPKG_ROOT_DIR}/installed/x64-windows/include")
 set(LWS_LIB_DIR "${VCPKG_ROOT_DIR}/installed/x64-windows/lib")
 
 if(EXISTS "${LWS_INCLUDE_DIR}/libwebsockets.h" AND EXISTS "${LWS_LIB_DIR}/websockets.lib")
+
     add_executable(live_binance_engine
         cpp_engine/src/live_binance_engine.cpp
+        cpp_engine/src/prism_live_engine.cpp
+        cpp_engine/src/prism_strategy.cpp
+        cpp_engine/src/trade_manager.cpp
         cpp_engine/src/connectors/BinanceClient.cpp
     )
 
@@ -42,16 +48,17 @@ if(EXISTS "${LWS_INCLUDE_DIR}/libwebsockets.h" AND EXISTS "${LWS_LIB_DIR}/websoc
         secur32
     )
 
-    message(STATUS "live_binance_engine enabled")
+    message(STATUS "live_binance_engine enabled with PRISM and TradeManager")
+
 else()
     message(WARNING "libwebsockets not found. live_binance_engine skipped.")
 endif()
 
-# Kafka Producer / Consumer
 find_package(protobuf CONFIG QUIET)
 find_package(RdKafka CONFIG QUIET)
 
 set(RDKAFKA_TARGET "")
+
 if(TARGET RdKafka::rdkafka++)
     set(RDKAFKA_TARGET RdKafka::rdkafka++)
 elseif(TARGET RdKafka::rdkafka)
@@ -61,6 +68,7 @@ elseif(TARGET rdkafka++)
 endif()
 
 if(protobuf_FOUND AND RDKAFKA_TARGET)
+
     add_library(proto_lib)
 
     protobuf_generate(
@@ -84,16 +92,21 @@ if(protobuf_FOUND AND RDKAFKA_TARGET)
             ${CMAKE_CURRENT_BINARY_DIR}
             ${CMAKE_CURRENT_BINARY_DIR}/proto
         )
-        target_link_libraries(${target} PRIVATE proto_lib ${RDKAFKA_TARGET})
+
+        target_link_libraries(${target} PRIVATE
+            proto_lib
+            ${RDKAFKA_TARGET}
+        )
+
         add_dependencies(${target} proto_lib)
     endforeach()
 
     message(STATUS "Kafka producer/consumer enabled")
+
 else()
     message(WARNING "protobuf and/or librdkafka not found. Kafka targets skipped.")
 endif()
 
-# PRISM Backtest
 add_executable(prism_backtest
     cpp_engine/src/prism_backtest.cpp
 )

@@ -1,35 +1,37 @@
-# Build directories
+# Build folders
 build/
 out/
-bin/
-
-# CMake
-CMakeCache.txt
-CMakeFiles/
-cmake_install.cmake
+Release/
+Debug/
 
 # Visual Studio
 .vs/
-*.vcxproj
-*.vcxproj.filters
-*.sln
-*.slnx
+*.suo
+*.user
+*.VC.db
 
-# Compiled objects
+# CMake
+CMakeFiles/
+CMakeCache.txt
+cmake_install.cmake
+
+# Binaries
+*.exe
+*.dll
+*.lib
 *.obj
 *.pdb
 *.ilk
-*.lib
-*.exp
-
-# Executables
-*.exe
-*.dll
 
 # Logs
 *.log
-*.tlog
 
-# Generated protobuf
-proto/market_data.pb.cc
-proto/market_data.pb.h
+# Runtime outputs
+trade_log.csv
+performance_summary.json
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+env/
